@@ -32,6 +32,7 @@ jobs:
         git commit -m "Update documentation"
     - name: Push gh-pages branch
       run: |
+        cd build
         git push --force "https://:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}" gh-pages
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
