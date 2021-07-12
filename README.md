@@ -7,6 +7,6 @@ with GitHub Actions?
 
 See https://soxofaan.github.io/github-actions-sphinx2ghpages/.
 
-Yep, that's Sphinx documentation built with the GitHub Actions workflow it documents.
+Yep, that's Sphinx documentation built by the GitHub Actions workflow it is documenting.
 Hashtag recursion alert!
 
