@@ -25,11 +25,11 @@ jobs:
         # pip install -r requirements.txt
     
     - name: Sphinx build
-      # Build HTML documentation from sources under `docs` to `build` folder
+      # Build HTML documentation from sources under `docs` to `build` folder.
       run: python -m sphinx -b html docs build
     
     - name: Commit documentation in gh-pages branch
-      # Store documentation in a temporary one-commit git repo
+      # Store documentation in a temporary one-commit git repo.
       run: |
         cd build
         git init -b gh-pages
@@ -42,7 +42,7 @@ jobs:
     - name: Push gh-pages branch
       # Push from the temporary repo to the `gh-pages` branch of your repo.
       # Warning: this will overwrite any existing content and history 
-      # of the `gh-pages` branch
+      # of the `gh-pages` branch.
       run: |
         cd build
         git push --force "https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}" gh-pages
