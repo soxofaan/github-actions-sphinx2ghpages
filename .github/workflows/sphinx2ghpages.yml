@@ -23,7 +23,7 @@ jobs:
         python -m sphinx -b html docs build
     - name: Commit documentation in gh-pages branch
       run: |
-        cd build/html
+        cd build
         git init -b gh-pages
         touch .nojekyll
         git config --local user.name "GitHub Actions Bot"
