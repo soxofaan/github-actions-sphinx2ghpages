@@ -1,7 +1,71 @@
 
-Hello
-======
+Sphinx Documentation building and publishing to GitHub Pages with GitHub Actions
+================================================================================
+
+You have a Python (or other) project that is documented with 
+`Sphinx <https://www.sphinx-doc.org/en/master/index.html>`_
+and you want to automatically build, deploy and publish that documentation
+with `GitHub Actions <https://docs.github.com/en/actions>`_
+and `GitHub Pages <https://docs.github.com/en/pages>`_.
 
 
-Hello world.
+Using third party GitHub Actions
+--------------------------------
+
+While the `GitHub Actions MarketPlace <https://github.com/marketplace?type=actions>`_
+contains a lot of potential pieces for that puzzle,
+it can be quite daunting to find the right actions for your use case.
+Moreover, you might have questions about automatically running
+third party code from some random GitHub user 
+in a background context with certain write or push permissions on your repository.
+
+
+Do it yourself
+--------------
+
+If you use such GitHub Actions, you typically introduce a dependency
+on tens or hundred lines of third party code, 
+while you actually just need a handfull of commands 
+to achieve the same result.
+
+
+Template
+~~~~~~~~
+
+This is a minimal template of a GitHub Actions YAML definition
+that only uses official GitHub actions and a bunch of ``git`` commands:
+
+
+.. literalinclude:: ../.github/workflows/sphinx2ghpages.yml
+    :language: YAML
+
+
+Tweaking
+~~~~~~~~
+
+Things you might want to change or tweak:
+
+-   Is your main branch called something else than ``main``? 
+    Change the ``on: push: branches`` list.
+-   Install the dependencies of your package with an extra line like 
+    ``python -m pip install .`` or ``python -m pip install -r requirements.txt``
+    under "Install dependencies and Sphinx"
+-   Use the desired source and target folders of your documentation. 
+    In this template the documentation is assumed to be under ``docs``
+    and the output HTML goes to ``build``
+-   Change user name, email or message for the commit on ``gh-pages`` branch
+
+
+
+.. warning:: This approach **overwrites and removes**
+    any existing content and history on your gh-pages branch. 
+
+    In most cases this is ok or even desired. 
+    The generated HTML is just a derivative of
+    your documentation's source under ``docs`` (which is left untouched)
+    and doing full version control of that generated HTML
+    is usually overkill.
+
+    Also see `ghp-import's behavior <https://github.com/c-w/ghp-import#big-fat-warning>`_
+
 
