@@ -14,8 +14,8 @@ Using third party GitHub Actions
 
 While the `GitHub Actions MarketPlace <https://github.com/marketplace?type=actions>`_
 contains a lot of potential pieces for that puzzle,
-it can be quite daunting to find the right actions for your use case.
-Moreover, you might have questions about automatically running
+it can be quite daunting to **find the right actions** for your use case.
+Moreover, you might have **security concerns** about automatically running
 third party code from some random GitHub user 
 in a background context with certain write or push permissions on your repository.
 
@@ -23,9 +23,9 @@ in a background context with certain write or push permissions on your repositor
 Do it yourself
 --------------
 
-If you use such GitHub Actions, you typically introduce a dependency
+If you use such third party GitHub Actions, you typically introduce a dependency
 on tens or hundred lines of third party code, 
-while you actually just need a handfull of commands 
+while you actually **just need a handful of commands**
 to achieve the same result.
 
 
@@ -52,7 +52,9 @@ Things you might want to change or tweak:
     under "Install dependencies and Sphinx"
 -   Use the desired source and target folders of your documentation. 
     In this template the documentation is assumed to be under ``docs``
-    and the output HTML goes to ``build``
+    and the output HTML goes to ``build``.
+    Note that your project's source and target folders can be a bit more complex, e.g.
+    ``docs/sources`` and ``docs/build/html`` respectively.
 -   Change user name, email or message for the commit on ``gh-pages`` branch
 
 
