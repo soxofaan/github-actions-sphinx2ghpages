@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Sphinx Documentation building and publishing to GitHub Pages with GitHub Actions &#8212; Sphinx Documentation building and publishing to GitHub Pages with GitHub Actions  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="sphinx-documentation-building-and-publishing-to-github-pages-with-github-actions">
+<h1>Sphinx Documentation building and publishing to GitHub Pages with GitHub Actions<a class="headerlink" href="#sphinx-documentation-building-and-publishing-to-github-pages-with-github-actions" title="Link to this heading">¶</a></h1>
+<p>You have a Python (or other) project that is documented with
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/index.html">Sphinx</a>
+and you want to automatically build, deploy and publish that documentation
+with <a class="reference external" href="https://docs.github.com/en/actions">GitHub Actions</a>
+and <a class="reference external" href="https://docs.github.com/en/pages">GitHub Pages</a>.</p>
+<section id="using-third-party-github-actions">
+<h2>Using third party GitHub Actions<a class="headerlink" href="#using-third-party-github-actions" title="Link to this heading">¶</a></h2>
+<p>While the <a class="reference external" href="https://github.com/marketplace?type=actions">GitHub Actions MarketPlace</a>
+contains a lot of potential pieces for that puzzle,
+it can be quite daunting to <strong>find the right actions</strong> for your use case.
+Moreover, you might have <strong>security concerns</strong> about automatically running
+third party code from some random GitHub user
+in a background context with certain write or push permissions on your repository.</p>
+</section>
+<section id="do-it-yourself">
+<h2>Do it yourself<a class="headerlink" href="#do-it-yourself" title="Link to this heading">¶</a></h2>
+<p>If you use such third party GitHub Actions, you typically introduce a dependency
+on tens or hundred lines of third party code,
+while you actually <strong>just need a handful of commands</strong>
+to achieve the same result.</p>
+<section id="template">
+<h3>Template<a class="headerlink" href="#template" title="Link to this heading">¶</a></h3>
+<p>This is a minimal template of a GitHub Actions YAML definition
+that only uses official GitHub actions and a bunch of <code class="docutils literal notranslate"><span class="pre">git</span></code> commands:</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sphinx Documentation to GitHub Pages</span>
+
+<span class="nt">on</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">push</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># Build docs when pushing to `main` branch.</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">main</span><span class="w"> </span><span class="p p-Indicator">]</span>
+
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Set up Python</span>
+<span class="w">      </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v5</span>
+<span class="w">      </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.12</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies (including Sphinx)</span>
+<span class="w">      </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">        </span><span class="no">python -m pip install --upgrade pip</span>
+<span class="w">        </span><span class="no">python -m pip install sphinx</span>
+<span class="w">        </span><span class="no"># Install additional dependencies of your package, e.g. one of:</span>
+<span class="w">        </span><span class="no"># python -m pip install .</span>
+<span class="w">        </span><span class="no"># python -m pip install -r requirements.txt</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sphinx build</span>
+<span class="w">      </span><span class="c1"># Build HTML documentation from sources under `docs` to `build` folder.</span>
+<span class="w">      </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python -m sphinx -b html docs build</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Commit documentation in gh-pages branch</span>
+<span class="w">      </span><span class="c1"># Store documentation in a temporary one-commit git repo.</span>
+<span class="w">      </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">        </span><span class="no">cd build</span>
+<span class="w">        </span><span class="no">git init -b gh-pages</span>
+<span class="w">        </span><span class="no">touch .nojekyll</span>
+<span class="w">        </span><span class="no">git config --local user.name &quot;GitHub Actions Bot&quot;</span>
+<span class="w">        </span><span class="no">git config --local user.email &quot;actions@github.com&quot;</span>
+<span class="w">        </span><span class="no">git add .</span>
+<span class="w">        </span><span class="no">git commit -m &quot;Update documentation&quot;</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Push gh-pages branch</span>
+<span class="w">      </span><span class="c1"># Push from the temporary repo to the `gh-pages` branch of your repo.</span>
+<span class="w">      </span><span class="c1"># Warning: this will overwrite any existing content and history </span>
+<span class="w">      </span><span class="c1"># of the `gh-pages` branch.</span>
+<span class="w">      </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">        </span><span class="no">cd build</span>
+<span class="w">        </span><span class="no">git push --force &quot;https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}&quot; gh-pages</span>
+<span class="w">      </span><span class="nt">env</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">GITHUB_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.GITHUB_TOKEN }}</span>
+</pre></div>
+</div>
+</section>
+<section id="tweaking">
+<h3>Tweaking<a class="headerlink" href="#tweaking" title="Link to this heading">¶</a></h3>
+<p>Things you might want to change or tweak:</p>
+<ul class="simple">
+<li><p>Is your main branch called something else than <code class="docutils literal notranslate"><span class="pre">main</span></code>?
+Change the <code class="docutils literal notranslate"><span class="pre">on:</span> <span class="pre">push:</span> <span class="pre">branches</span></code> list.</p></li>
+<li><p>Install the dependencies of your package with an extra line like
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> or <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code>
+under “Install dependencies and Sphinx”</p></li>
+<li><p>Use the desired source and target folders of your documentation.
+In this template the documentation is assumed to be under <code class="docutils literal notranslate"><span class="pre">docs</span></code>
+and the output HTML goes to <code class="docutils literal notranslate"><span class="pre">build</span></code>.
+Note that your project’s source and target folders can be a bit more complex, e.g.
+<code class="docutils literal notranslate"><span class="pre">docs/sources</span></code> and <code class="docutils literal notranslate"><span class="pre">docs/build/html</span></code> respectively.</p></li>
+<li><p>Change user name, email or message for the commit on <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This approach <strong>overwrites and removes</strong>
+any existing content and history on your gh-pages branch.</p>
+<p>In most cases this is ok or even desired.
+The generated HTML is just a derivative of
+your documentation’s source under <code class="docutils literal notranslate"><span class="pre">docs</span></code> (which is left untouched)
+and doing full version control of that generated HTML
+is usually overkill.</p>
+<p>Also see <a class="reference external" href="https://github.com/c-w/ghp-import#big-fat-warning">ghp-import’s behavior</a></p>
+</div>
+<style>#forkongithub a{background:#472;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#681;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#efc;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:fixed;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style>
+<span id="forkongithub"><a href="https://github.com/soxofaan/github-actions-sphinx2ghpages/blob/main/.github/workflows/sphinx2ghpages.yml">Fork me on GitHub</a></span></section>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2021, Stefaan Lippens.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.3.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
